@@ -16,6 +16,7 @@ import java.net.URLConnection;
  *
  */
 public class DownloadFile {
+
 	/**
 	 * 下载文件
 	 * 

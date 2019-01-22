@@ -3,6 +3,8 @@ package start;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import bean.albuminfo.AlbumInfo;
 import bean.trackinfo.TrackListInfo;
@@ -11,12 +13,18 @@ import util.DownloadFile;
 import ximalaya.Ximalaya;
 
 public class Run {
+
 	public static void main(String[] args) {
 		long startTimeMillis = System.currentTimeMillis();
+		System.out.println(startTimeMillis);
 		// 专辑id
 		String albumId = "19739466";
 		// 保存位置
 		String savePath = "D:\\TARGET_FOLDER";
+		File folder = new File(savePath);
+		if (folder.exists() == false) {
+			folder.mkdirs();
+		}
 		// 获取信息
 		Ximalaya ximalaya = new Ximalaya(albumId);
 		AlbumInfo albumInfo = ximalaya.getAlbumInfo();
@@ -36,6 +44,8 @@ public class Run {
 		String zero = "";
 		// 音轨总数是几位数
 		int trackAmountDigit = (trackTotalCount + "").length();
+		// 多线程下载
+		ExecutorService executorService = Executors.newFixedThreadPool(5);
 		do {
 			trackListInfo = ximalaya.getTrackListInfo();
 			ximalaya.setCurrentPage(ximalaya.getCurrentPage() + 1);
@@ -58,7 +68,8 @@ public class Run {
 				}
 				// 拼文件名
 				String filename = zero + index + "_" + trackName + fileSuffix;
-				DownloadFile.download(src, savePath, filename);
+//				DownloadFile.download(src, savePath, filename);
+				executorService.execute(new DownloadRunnable(src, savePath, filename));
 				// 添加到本地文件列表中
 				File file = new File(savePath + File.separator + filename);
 				localFileList.add(file);
@@ -69,6 +80,8 @@ public class Run {
 			}
 			// 只要后面还有就一直下载到整个专辑全下完
 		} while (trackListInfo.getData().getHasMore() == true);
+		// 关线程池
+		executorService.shutdown();
 		System.out.println();
 		System.out.println("Mission complete! cost: " + (System.currentTimeMillis() - startTimeMillis) + " ms");
 		System.out.println(
