@@ -80,6 +80,7 @@ public class Run {
 			}
 			// 只要后面还有就一直下载到整个专辑全下完
 		} while (trackListInfo.getData().getHasMore() == true);
+		executorService.shutdown();
 		System.out.println();
 		System.out.println("Mission complete! cost: " + (System.currentTimeMillis() - startTimeMillis) + " ms");
 		System.out.println(
