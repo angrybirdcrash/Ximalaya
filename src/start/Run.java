@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 import bean.albuminfo.AlbumInfo;
 import bean.trackinfo.TrackListInfo;
 import bean.trackinfo.TracksAudioPlay;
-import util.DownloadFile;
+import util.DownloadRunnable;
 import ximalaya.Ximalaya;
 
 public class Run {
@@ -80,8 +80,6 @@ public class Run {
 			}
 			// 只要后面还有就一直下载到整个专辑全下完
 		} while (trackListInfo.getData().getHasMore() == true);
-		// 关线程池
-		executorService.shutdown();
 		System.out.println();
 		System.out.println("Mission complete! cost: " + (System.currentTimeMillis() - startTimeMillis) + " ms");
 		System.out.println(
